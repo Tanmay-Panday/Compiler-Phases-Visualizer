@@ -1,0 +1,3 @@
+frontend
+npm i @monaco-editor/react axios react-d3-tree react-router-dom 
+tailwindcss
