@@ -1,4 +1,5 @@
 import {
+  get3ACFromJavaSrcCode,
   getCSTFromJavaSrcCode,
   getTokensFromJavaSrcCode,
 } from "../utils/javaCompilerUtils.js";
@@ -52,6 +53,28 @@ export const getJavaCST = async (req, res) => {
     res.status(200).json({
       message: "Parse tree has been fetched",
       cst,
+    });
+  } catch (error) {
+    console.error(error);
+    // 500 Internal Server Error if something goes wrong on the server
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//@description To get all the 3AC of a java program
+//@type POST request
+//@route /api/visualizer/get-java-3ac
+//@dataRecievedFrom {req.body.src_code}
+export const getJava3AC = async (req, res) => {
+  try {
+    const { src_code } = req.body; // get source code from request body
+    if (!src_code) {
+      return res.status(400).json({ message: "Source code not specified" });
+    }
+    // get threeACJava from source code
+    const threeACCode = get3ACFromJavaSrcCode(src_code);
+    res.status(200).json({
+      message: "Everything is working well",
     });
   } catch (error) {
     console.error(error);

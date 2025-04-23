@@ -1,6 +1,9 @@
 import { CharStream, CommonTokenStream, InputStream, Token } from "antlr4";
 import Java20Lexer from "../../Lexer_And_Parser/For_Java/Java20Lexer.js";
 import Java20Parser from "../../Lexer_And_Parser/For_Java/Java20Parser.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Helper Function to use JAVA20LEXER to get tokens in a readable format from a Java source code
 export const getTokensFromJavaSrcCode = (src_code) => {
@@ -52,4 +55,23 @@ export const getCSTFromJavaSrcCode = (src_code) => {
   // Convert the parse tree to JSON format
   const jsonTree = parseTreeToJson(tree, parser);
   return jsonTree;
+};
+
+// helper function to compile the java code and return 3AC code
+export const get3ACFromJavaSrcCode = (src_code) => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const filePath = path.join(
+    `${__dirname}`,
+    "..",
+    "..",
+    "Lexer_And_Parser",
+    "For_Java",
+    "temp",
+    "Main.java"
+  ); // location where Main.java file will be created
+  // create a java file called "Main.java" in Lexer_And_Parser/For_Java/temp directory and pasting the src_code in it
+  fs.writeFileSync(filePath, src_code, "utf-8");
+  console.log(`Main.java file created at path ${filePath}`);
 };
