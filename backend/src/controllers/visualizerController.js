@@ -1,12 +1,16 @@
 import {
-  get3ACFromJavaSrcCode,
+  compileJavaSourceCode,
   getCSTFromJavaSrcCode,
   getTokensFromJavaSrcCode,
+  saveJavaSourceCode,
 } from "../utils/javaCompilerUtils.js";
 
-import { getCSTFromPythonSrcCode, getTokensFormPythonSrcCode } from "../utils/pythonCompilerUtils.js";
-
-
+import {
+  compilePythonSourceCode,
+  getCSTFromPythonSrcCode,
+  getTokensFormPythonSrcCode,
+  savePythonSourceCode,
+} from "../utils/pythonCompilerUtils.js";
 
 //@description To get all the tokens of a java program
 //@type POST request
@@ -65,20 +69,20 @@ export const getJavaCST = async (req, res) => {
   }
 };
 
-//@description To get all the 3AC of a java program
+//@description To save the java code to Main.java file
 //@type POST request
-//@route /api/visualizer/get-java-3ac
+//@route /api/visualizer/save-java-code
 //@dataRecievedFrom {req.body.src_code}
-export const getJava3AC = async (req, res) => {
+export const saveJavaCode = async (req, res) => {
   try {
     const { src_code } = req.body; // get source code from request body
     if (!src_code) {
       return res.status(400).json({ message: "Source code not specified" });
     }
     // get threeACJava from source code
-    const threeACCode = get3ACFromJavaSrcCode(src_code);
+    const savedCode = saveJavaSourceCode(src_code);
     res.status(200).json({
-      message: "Everything is working well",
+      message: "Java Source Code has been saved",
     });
   } catch (error) {
     console.error(error);
@@ -87,9 +91,26 @@ export const getJava3AC = async (req, res) => {
   }
 };
 
+//@description To compile the saved Main.java file
+//@type GET request
+//@route /api/visualizer/compile-java-code
+/*
+Responses:
+    status code:200 ( Success )   CompilationResult: { success: true, message: "Compilation successful" } || { success: false, message: error message }
+    status code:500 ( Internal Server Error if something goes wrong on the server )   message: "Internal server error"
+*/
+export const compileJavaCode = async (req, res) => {
+  try {
+    const compileResult = await compileJavaSourceCode(); // Note the await
+    res.status(200).json({ compileResult });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 // ======================================================================================================================
-
 
 // @description To get all the tokens of a python program
 // @type POST request
@@ -145,5 +166,45 @@ export const getPythonCST = async (req, res) => {
     console.error(error);
     // 500 Internal Server Error if something goes wrong on the server
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//@description To save the python code to main.py file
+//@type POST request
+//@route /api/visualizer/save-python-code
+//@dataRecievedFrom {req.body.src_code}
+export const savePythonCode = async (req, res) => {
+  try {
+    const { src_code } = req.body; // get source code from request body
+    if (!src_code) {
+      return res.status(400).json({ message: "Source code not specified" });
+    }
+    const savedCode = savePythonSourceCode(src_code);
+    res.status(200).json({
+      message: "Python Source Code has been saved",
+    });
+  } catch (error) {
+    console.error(error);
+    // 500 Internal Server Error if something goes wrong on the server
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+//@description To compile the saved main.py file
+//@type GET request
+//@route /api/visualizer/compile-python-code
+/*
+Responses:
+    status code:200 ( Success )   CompilationResult: { success: true, message: "Compilation successful" } || { success: false, message: error message }
+    status code:500 ( Internal Server Error if something goes wrong on the server )   message: "Internal server error"
+*/
+export const compilePythonCode = async (req, res) => {
+  try {
+    const compileResult = await compilePythonSourceCode();
+    res.status(200).json({ compileResult });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
