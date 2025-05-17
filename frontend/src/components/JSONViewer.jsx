@@ -8,7 +8,8 @@ const JSONViewer = ({
   return (
     <div>
       <Editor
-        height="50vh"
+        height="70vh"
+        width="50vw"
         defaultLanguage="javascript"
         value={JSON.stringify(currentJSONObject, null, 2)}
         options={{

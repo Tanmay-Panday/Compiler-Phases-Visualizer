@@ -3,8 +3,8 @@ import React from "react";
 
 const InfoCard = ({ cardHeading, cardBody, cardImg }) => {
   return (
-    <Card>
-        <Card.Header as="img" src={cardImg} alt="image" />
+    <Card className=" max-w-sm">
+        <Card.Header as="img" src={cardImg} alt="image" className="h-30 w-30"/>
       <Card.Body>
         <Typography type="h6">{cardHeading}</Typography>
         <Typography className="my-1 text-foreground">{cardBody}</Typography>

@@ -19,6 +19,9 @@ const PracticalPage = () => {
   const [languageIcon, setLanguageIcon] = React.useState(
     CodeConfigInfo.java.icon
   ); // icon of the language
+
+  const [phase1API, setPhase1API] = React.useState(APIEndpoints.GET_JAVA_TOKENS); // API endpoint for phase 1
+  const [phase2API, setPhase2API] = React.useState(APIEndpoints.GET_JAVA_CST); // API endpoint for phase 2
   const [phase1JsonTokens, setPhase1JsonTokens] = React.useState(""); // tokens generated from the source code
   const [phase2JsonCst, setPhase2JsonCst] = React.useState(""); // CST generated from the source code
 
@@ -41,7 +44,7 @@ const PracticalPage = () => {
   // function to getTokens of src-code from backend-api and store them in phase1JsonTokens
   const getTokensinJson = async (code) => {
     try {
-      const response = await axios.post(APIEndpoints.GET_JAVA_TOKENS, {
+      const response = await axios.post(phase1API, {
         src_code: code,
       });
       if (response.status !== 200) {
@@ -81,7 +84,7 @@ const PracticalPage = () => {
   // function to getCST of a src-code from backend-api and store them in phase2JsonCst
   const getCST = async (code) => {
     try {
-      const response = await axios.post(APIEndpoints.GET_JAVA_CST, {
+      const response = await axios.post(phase2API, {
         src_code: code,
       });
       if (response.status !== 200) {
@@ -121,9 +124,13 @@ const PracticalPage = () => {
     if (language === "java") {
       setfileName(CodeConfigInfo.java.fileName);
       setLanguageIcon(CodeConfigInfo.java.icon);
+      setPhase1API(APIEndpoints.GET_JAVA_TOKENS);
+      setPhase2API(APIEndpoints.GET_JAVA_CST);
     } else if (language === "python") {
       setfileName(CodeConfigInfo.python.fileName);
       setLanguageIcon(CodeConfigInfo.python.icon);
+      setPhase1API(APIEndpoints.GET_PYTHON_TOKENS);
+      setPhase2API(APIEndpoints.GET_PYTHON_CST);
     }
   }, [language]);
 
@@ -172,35 +179,63 @@ const PracticalPage = () => {
           </Button>
         </div>
       </div>
+
+      <br />
       <br />
       <hr />
-      <div id="ph1">
+
+      <div id="ph1" className="flex justify-around items-center">
         {/* Phase 1 - Tokenization */}
-        <button onClick={handleTokenization}>Lexical Analysis</button>
-        {/* Display tokens in JSON format */}
-        {phase1JsonTokens && (
-          <div className="bg-amber-200">
-            <h2 className="text-2xl font-bold">Tokens</h2>
-            <JSONViewer
-              currentJSONObject={phase1JsonTokens}
-              width="50%"
-              height="50vh"
-            />
-          </div>
-        )}
+        <div>
+          <InfoCard
+            cardHeading={PracticalPageInfo.phase_one_info.title}
+            cardBody={PracticalPageInfo.phase_one_info.description}
+            cardImg={PracticalPageInfo.phase_one_info.logo}
+          />
+        </div>
+        <div>
+          <Button onClick={handleTokenization}>Lexical Analysis</Button>
+        </div>
+        <div>
+          {/* Display tokens in JSON format */}
+          {phase1JsonTokens && (
+            <div className="bg-blue-400 rounded-lg">
+              <h2 className="text-2xl font-bold">Generated Tokens</h2>
+              <JSONViewer
+                currentJSONObject={phase1JsonTokens}
+                width="50vw"
+                height="50vh"
+              />
+            </div>
+          )}
+        </div>
       </div>
+
+      <br />
       <br />
       <hr />
-      <div id="ph2">
+
+      <div id="ph2" className="flex justify-around items-center">
         {/* Phase 2 - Parsing */}
-        <button onClick={handleParsing}>Syntax Analysis</button>
+        <div>
+          <InfoCard
+            cardHeading={PracticalPageInfo.phase_two_info.title}
+            cardBody={PracticalPageInfo.phase_two_info.description}
+            cardImg={PracticalPageInfo.phase_two_info.logo}
+          />
+        </div>
+        <div>
+          <Button onClick={handleParsing}>Syntax Analysis</Button>
+        </div>
         {/* Display CST in Tree-format */}
-        {phase2JsonCst && (
-          <div>
-            <h2 className="text-2xl font-bold">CST</h2>
-            <TreeViewer jsonTree={phase2JsonCst} height="80vh" width="auto" />
-          </div>
-        )}
+        <div>
+          {phase2JsonCst && (
+            <div>
+              <h2 className="text-2xl font-bold">Concrete Syntax Tree ( C S T )</h2>
+              <TreeViewer jsonTree={phase2JsonCst} height="70vh" width="50vw" />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
