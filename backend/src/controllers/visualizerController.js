@@ -4,6 +4,10 @@ import {
   getTokensFromJavaSrcCode,
 } from "../utils/javaCompilerUtils.js";
 
+import { getCSTFromPythonSrcCode, getTokensFormPythonSrcCode } from "../utils/pythonCompilerUtils.js";
+
+
+
 //@description To get all the tokens of a java program
 //@type POST request
 //@route /api/visualizer/get-java-tokens
@@ -75,6 +79,67 @@ export const getJava3AC = async (req, res) => {
     const threeACCode = get3ACFromJavaSrcCode(src_code);
     res.status(200).json({
       message: "Everything is working well",
+    });
+  } catch (error) {
+    console.error(error);
+    // 500 Internal Server Error if something goes wrong on the server
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+// ======================================================================================================================
+
+
+// @description To get all the tokens of a python program
+// @type POST request
+// @route /api/visualizer/get-python-tokens
+// @dataRecievedFrom {req.body.src_code}
+/*
+Responses: 
+    status code:400 ( Bad Request if no source code is provided )   message: "Source code not specified"
+    status code:200 ( Success )   message: "Tokens have been fetched" , tokensArray: [ { type, text, line } ]
+    status code:500 ( Internal Server Error if something goes wrong on the server )   message: "Internal server error"
+*/
+export const getPythonTokens = async (req, res) => {
+  try {
+    const { src_code } = req.body; // get source code from request body
+    if (!src_code) {
+      return res.status(400).json({ message: "Source code not specified" });
+    }
+    const tokensArray = getTokensFormPythonSrcCode(src_code); // get tokens from source code
+    res.status(200).json({
+      message: "Tokens have been fetched",
+      NumberOfTokens: tokensArray.length,
+      tokensArray,
+    });
+  } catch (error) {
+    console.error(error);
+    // 500 Internal Server Error if something goes wrong on the server
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//@description To get all the parse-tree(cst) of a python program
+//@type POST request
+//@route /api/visualizer/get-python-cst
+//@dataRecievedFrom {req.body.src_code}
+/*
+Responses: 
+    status code:400 ( Bad Request if no source code is provided )   message: "Source code not specified"
+    status code:200 ( Success )   message: "Parse tree has been fetched" , cst: { name, children: [ { name, children: [ ... ] } ] }
+    status code:500 ( Internal Server Error if something goes wrong on the server )   message: "Internal server error"
+*/
+export const getPythonCST = async (req, res) => {
+  try {
+    const { src_code } = req.body; // get source code from request body
+    if (!src_code) {
+      return res.status(400).json({ message: "Source code not specified" });
+    }
+    const cst = getCSTFromPythonSrcCode(src_code); // get parse tree from source code
+    res.status(200).json({
+      message: "Parse tree has been fetched",
+      cst,
     });
   } catch (error) {
     console.error(error);
