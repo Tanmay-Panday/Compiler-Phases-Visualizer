@@ -2,6 +2,8 @@ import Phase0CardImg from '../assets/Phase0CardImg.jpeg'
 import Phase1CardImg from '../assets/Phase1CardImg.png'
 import Phase2CardImg from '../assets/Phase2CardImg.png'
 import Phase3CardImg from '../assets/Phase3CardImg.png'
+import Phase4CardImg from '../assets/Phase4CardImg.png'
+import Phase5CardImg from '../assets/Phase5CardImg.png'
 
 const PracticalPageInfo = {
   phase_zero_info: {
@@ -34,6 +36,22 @@ const PracticalPageInfo = {
         The backend processes the parse tree and checks for semantic errors, such as type mismatches or undefined variables.
        This phase is important for understanding the meaning of your code and ensuring that it follows the rules of the programming language.`,
     logo: Phase3CardImg,
+  },
+  phase_four_info: {
+    title: "Phase 4 - Intermediate Code Generation",
+    description:
+      `In this phase, the parse tree generated in Phase 2 is sent to the backend for intermediate code generation.
+       The backend processes the parse tree and generates an intermediate representation of your code.
+       This phase is important for optimizing your code and making it easier to translate into machine code.`,
+    logo: Phase4CardImg,
+  },
+  phase_five_info: {
+    title: "Phase 5 - Optimized Target Code Generation",
+    description:
+      `In this phase, the intermediate representation generated in Phase 4 is sent to the backend for target code generation.
+       The backend processes the intermediate representation and generates the final machine code or bytecode after applying various optimizations.
+       This phase is crucial for executing your code on a computer.`,
+    logo: Phase5CardImg,
   },
 };
 
