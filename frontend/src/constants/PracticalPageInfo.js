@@ -1,6 +1,8 @@
 import Phase0CardImg from '../assets/Phase0CardImg.jpeg'
 import Phase1CardImg from '../assets/Phase1CardImg.png'
 import Phase2CardImg from '../assets/Phase2CardImg.png'
+import Phase3CardImg from '../assets/Phase3CardImg.png'
+
 const PracticalPageInfo = {
   phase_zero_info: {
     title: "Phase 0 - Code Writing",
@@ -24,6 +26,14 @@ const PracticalPageInfo = {
        The backend processes the tokens and returns a parse tree, which represents the hierarchical structure of your code.
        This phase is essential for understanding how different parts of your code relate to each other.`,
     logo: Phase2CardImg,
+  },
+  phase_three_info: {
+    title: "Phase 3 - Semantic Analysis",
+    description:
+      `In this phase, the parse tree generated in Phase 2 is sent to the backend for semantic analysis.
+        The backend processes the parse tree and checks for semantic errors, such as type mismatches or undefined variables.
+       This phase is important for understanding the meaning of your code and ensuring that it follows the rules of the programming language.`,
+    logo: Phase3CardImg,
   },
 };
 

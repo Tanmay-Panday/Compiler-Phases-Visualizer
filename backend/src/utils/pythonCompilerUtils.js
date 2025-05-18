@@ -111,3 +111,69 @@ export const compilePythonSourceCode = async () => {
     };
   }
 };
+
+// helper function to get the IR of the python byte code
+export const getIRFromPythonSrcCode = async () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const pythonScriptPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "Lexer_And_Parser",
+    "For_Python",
+    "temp",
+    "irShower.py"
+  );
+
+  try {
+    const { stdout, stderr } = await execAsync(`python "${pythonScriptPath}"`);
+    return {
+      success: true,
+      message: "IR generated successfully",
+      report: "IR was generated for Python Bytecode file .pyc",
+      code: stdout,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Failed to generate IR",
+      report: error.stdout || error.stderr || error.message,
+      code: null,
+    };
+  }
+};
+
+// helper function to get the IR of the python byte code
+export const getTCFromPythonSrcCode = async () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const pythonScriptPath = path.join(
+    __dirname,
+    "..",
+    "..",
+    "Lexer_And_Parser",
+    "For_Python",
+    "temp",
+    "readableByteCodeShower.py"
+  );
+
+  try {
+    const { stdout, stderr } = await execAsync(`python "${pythonScriptPath}"`);
+    return {
+      success: true,
+      message: "IR generated successfully",
+      report: "IR was generated for Python Bytecode file .pyc",
+      code: stdout,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Failed to generate IR",
+      report: error.stdout || error.stderr || error.message,
+      code: null,
+    };
+  }
+};
