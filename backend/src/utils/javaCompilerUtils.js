@@ -3,6 +3,7 @@ import Java20Lexer from "../../Lexer_And_Parser/For_Java/Java20Lexer.js";
 import Java20Parser from "../../Lexer_And_Parser/For_Java/Java20Parser.js";
 import { parseTreeToJson } from "./globalUtils.js";
 import fs from "fs";
+import fsPromises from 'fs/promises'
 import path from "path";
 import { fileURLToPath } from "url";
 import { exec } from "child_process";
@@ -93,6 +94,80 @@ export const compileJavaSourceCode = async () => {
       success: false,
       message: "Compilation failed",
       report: error.stderr || error.message,
+    };
+  }
+};
+
+//helper function to get Jimple code from Main.class file
+export const getJimpleCode = async () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const tempDir = path.join(
+    __dirname,
+    "..",
+    "..",
+    "Lexer_And_Parser",
+    "For_Java",
+    "temp"
+  );
+  const sootJarFile = `soot-4.6.0-jar-with-dependencies.jar`;
+  const targetClassName = `Main`; // Main.class file will be convberted to Jimple code
+  const outputFilePath = path.join(
+    tempDir,
+    "sootOutput",
+    `${targetClassName}.jimple`
+  );
+
+  const command = `cd ${tempDir} && java -cp ${sootJarFile} soot.Main -cp . -pp -f jimple ${targetClassName}`;
+  try {
+    const { stdout, stderr } = await execAsync(command);
+    const jimpleCode = await fsPromises.readFile(outputFilePath, "utf-8");
+    return {
+      success: true,
+      message: "Jimple code generated successfully",
+      report: stdout || stderr,
+      code: jimpleCode,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Jimple code generation failed",
+      report: error.stderr || error.message,
+      code: null,
+    };
+  }
+};
+
+// helper function to get the Readable format of the java byte code
+export const getReadableJavaByteCode = async () => {
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+
+  const tempDir = path.join(
+    __dirname,
+    "..",
+    "..",
+    "Lexer_And_Parser",
+    "For_Java",
+    "temp"
+  );
+  const targetClassName = `Main`; // Main.class file will be convberted to Jimple code
+  const command = `cd ${tempDir} && javap -c ${targetClassName}.class`;
+  try {
+    const { stdout, stderr } = await execAsync(command);
+    return {
+      success: true,
+      message: "Readable Java bytecode generated successfully",
+      report: "Readable bytecode generated from Main.class",
+      code: stdout,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Readable Java bytecode generation failed",
+      report: error.stderr || error.message,
+      code: null,
     };
   }
 };

@@ -1,6 +1,8 @@
 import {
   compileJavaSourceCode,
   getCSTFromJavaSrcCode,
+  getJimpleCode,
+  getReadableJavaByteCode,
   getTokensFromJavaSrcCode,
   saveJavaSourceCode,
 } from "../utils/javaCompilerUtils.js";
@@ -8,6 +10,8 @@ import {
 import {
   compilePythonSourceCode,
   getCSTFromPythonSrcCode,
+  getIRFromPythonSrcCode,
+  getTCFromPythonSrcCode,
   getTokensFormPythonSrcCode,
   savePythonSourceCode,
 } from "../utils/pythonCompilerUtils.js";
@@ -105,10 +109,35 @@ export const compileJavaCode = async (req, res) => {
     res.status(200).json({ compileResult });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
+//@description To get get Intermediate Representation (IR) of a java program (Jimple Code similar to three address code)
+//@type GET request
+//@route /api/visualizer/get-java-ir
+export const getJavaIR = async (req, res) => {
+  try {
+    const codeConversionResult = await getJimpleCode(); // Note the await
+    res.status(200).json({ codeConversionResult });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//@description To get readable Target Code(Byte Code) of saved java program
+//@type GET request
+//@route /api/visualizer/get-java-tc
+export const getJavaTC = async (req, res) => {
+  try {
+    const codeConversionResult = await getReadableJavaByteCode(); // Note the await
+    res.status(200).json({ codeConversionResult });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });    
+  }
+}
 
 // ======================================================================================================================
 
@@ -190,7 +219,6 @@ export const savePythonCode = async (req, res) => {
   }
 };
 
-
 //@description To compile the saved main.py file
 //@type GET request
 //@route /api/visualizer/compile-python-code
@@ -205,6 +233,32 @@ export const compilePythonCode = async (req, res) => {
     res.status(200).json({ compileResult });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//@description To get get Intermediate Representation (IR) of a python program (disassembled python bytecode)
+//@type GET request
+//@route /api/visualizer/get-python-ir
+export const getPythonIR = async (req, res) => {
+  try {
+    const codeConversionResult = await getIRFromPythonSrcCode(); // Note the await
+    res.status(200).json({ codeConversionResult });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+//@description To get get Readable Target Code(Python Bytecode) of a python program (disassembled python bytecode)
+//@type GET request
+//@route /api/visualizer/get-python-tc
+export const getPythonTC = async (req, res) => {
+  try {
+    const codeConversionResult = await getTCFromPythonSrcCode(); // Note the await
+    res.status(200).json({ codeConversionResult });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
