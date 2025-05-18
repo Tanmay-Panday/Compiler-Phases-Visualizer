@@ -164,14 +164,14 @@ export const getTCFromPythonSrcCode = async () => {
     const { stdout, stderr } = await execAsync(`python "${pythonScriptPath}"`);
     return {
       success: true,
-      message: "IR generated successfully",
-      report: "IR was generated for Python Bytecode file .pyc",
+      message: "TC generated successfully",
+      report: "Readable Target Code(Python Bytecode) was generated",
       code: stdout,
     };
   } catch (error) {
     return {
       success: false,
-      message: "Failed to generate IR",
+      message: "Failed to generate TC",
       report: error.stdout || error.stderr || error.message,
       code: null,
     };

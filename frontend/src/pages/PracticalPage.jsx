@@ -32,12 +32,18 @@ const PracticalPage = () => {
   const [phase3API, setPhase3API] = React.useState(
     APIEndpoints.COMPILE_JAVA_CODE
   ); // API endpoint for phase 3
+  const [phase4API, setPhase4API] = React.useState(APIEndpoints.GET_JAVA_IR); // API endpoint for phase 4
+  const [phase5API, setPhase5API] = React.useState(APIEndpoints.GET_JAVA_TC); // API endpoint for phase 5
 
   const [phase1JsonTokens, setPhase1JsonTokens] = React.useState(""); // tokens generated from the source code
   const [phase2JsonCst, setPhase2JsonCst] = React.useState(""); // CST generated from the source code
   const [phase3Response, setPhase3Response] = React.useState(""); // response from the backend for phase 3
+  const [phase4Response, setPhase4Response] = React.useState(""); // response from the backend for phase 4
+  const [phase5Response, setPhase5Response] = React.useState(""); // response from the backend for phase 5
 
   const [phase3Loading, setPhase3Loading] = React.useState(false); // loading state for phase 3
+  const [phase4Loading, setPhase4Loading] = React.useState(false); // loading state for phase 4
+  const [phase5Loading, setPhase5Loading] = React.useState(false); // loading state for phase 5
   // ====================================================================================================
 
   // utilities for code editor ( phase 0 )
@@ -167,6 +173,48 @@ const PracticalPage = () => {
       setPhase3Loading(false);
     }
   };
+
+  // ---------------------------------------------------------------------------------
+  // utilities for intermediate code generation (Phase 4 - Intermediate Code Generation)
+
+  // function to handle intermediate code generation
+  const handleIntermediateCodeGeneration = async () => {
+    try {
+      setPhase4Loading(true);
+      const response = await axios.get(phase4API);
+      if (response.status !== 200) {
+        console.log(response.data.message);
+        setPhase4Loading(false);
+        return;
+      }
+      setPhase4Response(response.data.codeConversionResult);
+    } catch (error) {
+      console.log(`Error while generating intermediate code: ${error}`);
+    } finally {
+      setPhase4Loading(false);
+    }
+  };
+
+  // ---------------------------------------------------------------------------------
+  // utilities for target code generation (Phase 5 - Target Code Generation)
+
+  // function to handle target code generation
+  const handleTargetCodeGeneration = async () => {
+    try {
+      setPhase5Loading(true);
+      const response = await axios.get(phase5API);
+      if (response.status !== 200) {
+        console.log(response.data.message);
+        setPhase5Loading(false);
+        return;
+      }
+      setPhase5Response(response.data.codeConversionResult);
+    } catch (error) {
+      console.log(`Error while generating target code: ${error}`);      
+    } finally {
+      setPhase5Loading(false);
+    }
+  }
   //============================================================================================
   // useEffect for render management
 
@@ -179,6 +227,8 @@ const PracticalPage = () => {
       setPhase1API(APIEndpoints.GET_JAVA_TOKENS);
       setPhase2API(APIEndpoints.GET_JAVA_CST);
       setPhase3API(APIEndpoints.COMPILE_JAVA_CODE);
+      setPhase4API(APIEndpoints.GET_JAVA_IR);
+      setPhase5API(APIEndpoints.GET_JAVA_TC);
     } else if (language === "python") {
       setfileName(CodeConfigInfo.python.fileName);
       setLanguageIcon(CodeConfigInfo.python.icon);
@@ -186,6 +236,8 @@ const PracticalPage = () => {
       setPhase1API(APIEndpoints.GET_PYTHON_TOKENS);
       setPhase2API(APIEndpoints.GET_PYTHON_CST);
       setPhase3API(APIEndpoints.COMPILE_PYTHON_CODE);
+      setPhase4API(APIEndpoints.GET_PYTHON_IR);
+      setPhase5API(APIEndpoints.GET_PYTHON_TC);
     }
   }, [language]);
 
@@ -311,7 +363,7 @@ const PracticalPage = () => {
         <div>
           <Button onClick={handleCompileCode}>Semantic Analysis</Button>
         </div>
-        <div className="w-sm h-auto flex-col max-w-md">
+        <div className="w-sm h-auto flex flex-col max-w-md items-center space-y-6 border-dashed border-2 p-4">
           <Typography type="h3" color="primary">
             Compilation Status
           </Typography>
@@ -375,6 +427,198 @@ const PracticalPage = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <br />
+      <br />
+      <hr />
+      <div id="ph4" className="flex justify-evenly items-center gap-4">
+        {/* Phase 4 - Intermediate Code Generation */}
+        <div>
+          <InfoCard
+            cardHeading={PracticalPageInfo.phase_four_info.title}
+            cardBody={PracticalPageInfo.phase_four_info.description}
+            cardImg={PracticalPageInfo.phase_four_info.logo}
+          />
+        </div>
+        <div className="flex flex-col justify-center items-center space-y-6 border-dashed border-2 p-4">
+          <div>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={handleIntermediateCodeGeneration}
+            >
+              Generate <br />
+              Intermediate-Code
+              <br />
+              Representation
+            </Button>
+          </div>
+
+          <div className="w-sm h-auto flex-col max-w-md">
+            <Typography type="h3" color="primary">
+              Intermediate Code Status
+            </Typography>
+            {/* while phase4Loading is true showing loading spinner in place of the below div */}
+            {phase4Loading ? (
+              <div className="flex justify-center items-center">
+                <Trefoil />
+              </div>
+            ) : (
+              <div className="flex-col justify-evenly">
+                {/* success status */}
+                <div id="success" className="flex gap-5">
+                  <Typography type="h5" color="info">
+                    Success Status :
+                  </Typography>
+                  {phase4Response && (
+                    <span>
+                      {phase4Response.success ? (
+                        <Typography type="h6" color="success">
+                          No Error Occured
+                        </Typography>
+                      ) : (
+                        <Typography type="h6" color="error">
+                          Error Occured
+                        </Typography>
+                      )}
+                    </span>
+                  )}
+                </div>
+
+                {/* message Recieved */}
+                <div id="message" className="flex gap-5">
+                  <Typography type="h5" color="info">
+                    Message :
+                  </Typography>
+                  {phase4Response && (
+                    <Typography
+                      type="h6"
+                      color={phase4Response.success ? "success" : "error"}
+                    >
+                      {phase4Response.message}
+                    </Typography>
+                  )}
+                </div>
+
+                {/* Report Recieved */}
+                <div id="report" className="flex gap-5">
+                  <Typography type="h5" color="info">
+                    Report :
+                  </Typography>
+                  {phase4Response && (
+                    <Typography
+                      type="h6"
+                      color={phase4Response.success ? "success" : "error"}
+                    >
+                      {phase4Response.report}
+                    </Typography>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Display Intermediate Code */}
+        {phase4Response && (
+          <pre className=" border-2 border-dashed"><code className=" text-pretty">{phase4Response.success ? phase4Response.code : null}</code></pre>
+        )}
+      </div>
+
+      <br />
+      <br />
+      <hr />
+      <div id="ph5" className="flex justify-evenly items-center gap-4">
+        {/* Phase 5- Target Code Generation */}
+        <div>
+          <InfoCard
+            cardHeading={PracticalPageInfo.phase_five_info.title}
+            cardBody={PracticalPageInfo.phase_five_info.description}
+            cardImg={PracticalPageInfo.phase_five_info.logo}
+          />
+        </div>
+        <div className="flex flex-col justify-center items-center space-y-6 border-dashed border-2 p-4">
+          <div>
+            <Button
+              variant="outline"
+              size="md"
+              onClick={handleTargetCodeGeneration}
+            >
+              Generate <br />
+              Target-Code
+              <br />
+              Representation
+            </Button>
+          </div>
+
+          <div className="w-sm h-auto flex-col max-w-md">
+            <Typography type="h3" color="primary">
+              Target Code Status
+            </Typography>
+            {/* while phase5Loading is true showing loading spinner in place of the below div */}
+            {phase5Loading ? (
+              <div className="flex justify-center items-center">
+                <Trefoil />
+              </div>
+            ) : (
+              <div className="flex-col justify-evenly">
+                {/* success status */}
+                <div id="success" className="flex gap-5">
+                  <Typography type="h5" color="info">
+                    Success Status :
+                  </Typography>
+                  {phase5Response && (
+                    <span>
+                      {phase5Response.success ? (
+                        <Typography type="h6" color="success">
+                          No Error Occured
+                        </Typography>
+                      ) : (
+                        <Typography type="h6" color="error">
+                          Error Occured
+                        </Typography>
+                      )}
+                    </span>
+                  )}
+                </div>
+
+                {/* message Recieved */}
+                <div id="message" className="flex gap-5">
+                  <Typography type="h5" color="info">
+                    Message :
+                  </Typography>
+                  {phase5Response && (
+                    <Typography
+                      type="h6"
+                      color={phase5Response.success ? "success" : "error"}
+                    >
+                      {phase5Response.message}
+                    </Typography>
+                  )}
+                </div>
+
+                {/* Report Recieved */}
+                <div id="report" className="flex gap-5">
+                  <Typography type="h5" color="info">
+                    Report :
+                  </Typography>
+                  {phase5Response && (
+                    <Typography
+                      type="h6"
+                      color={phase5Response.success ? "success" : "error"}
+                    >
+                      {phase5Response.report}
+                    </Typography>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Display Target Code */}
+        {phase5Response && (
+          <pre className=" border-2 border-dashed"><code className=" text-pretty">{phase5Response.success ? phase5Response.code : null}</code></pre>
+        )}
       </div>
     </div>
   );
