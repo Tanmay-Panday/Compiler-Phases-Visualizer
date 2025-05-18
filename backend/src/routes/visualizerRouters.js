@@ -24,7 +24,6 @@ visualizerRouter.get("/compile-java-code", compileJavaCode); // to compile the s
 visualizerRouter.get("/get-java-ir", getJavaIR); // to get the intermediate code representation of the java code
 visualizerRouter.get("/get-java-tc", getJavaTC); // to get readable Target Code(Java Byte Code) of saved java program
 
-
 // PYTHON RELATED ROUTES
 visualizerRouter.post("/get-python-tokens", getPythonTokens); // to get all the tokens of a python source code
 visualizerRouter.post("/get-python-cst", getPythonCST); // to get the parse-tree(cst) of a python source code
